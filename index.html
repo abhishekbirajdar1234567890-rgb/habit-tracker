@@ -1,67 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#171c2f">
-    <title>Daily Habit Tracker</title>
-    <link rel="stylesheet" href="./styles.css">
-  </head>
-  <body>
-    <main class="app-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow" id="todayLabel"></p>
-          <h1>My habits</h1>
-        </div>
-        <button class="icon-button" id="clearAllButton" type="button" title="Reset all habits" aria-label="Reset all habits">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14M10 10v6M14 10v6"/></svg>
-        </button>
-      </header>
-
-      <section class="summary" aria-label="Daily summary">
-        <div class="progress-ring" id="progressRing">
-          <div class="progress-copy">
-            <strong id="progressPercent">0%</strong>
-            <span>complete</span>
-          </div>
-        </div>
-        <div class="summary-copy">
-          <p>Today's progress</p>
-          <strong><span id="completedCount">0</span> of <span id="totalCount">0</span> habits</strong>
-        </div>
-      </section>
-
-      <section class="habits" aria-labelledby="habitsHeading">
-        <div class="section-heading">
-          <h2 id="habitsHeading">Today</h2>
-          <button class="text-button" id="showAddButton" type="button">+ Add habit</button>
-        </div>
-
-        <form class="add-form" id="addForm" hidden>
-          <input id="habitInput" name="habit" type="text" maxlength="60" placeholder="New habit name" aria-label="New habit name" required>
-          <button type="submit">Add</button>
-        </form>
-
-        <div class="habit-list" id="habitList"></div>
-      </section>
-    </main>
-
-    <template id="habitTemplate">
-      <article class="habit-item">
-        <button class="habit-check" type="button" aria-label="Mark habit complete">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 3 3 7-7"/></svg>
-        </button>
-        <div class="habit-details">
-          <h3></h3>
-          <p></p>
-        </div>
-        <button class="delete-button" type="button" title="Delete habit" aria-label="Delete habit">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></svg>
-        </button>
-      </article>
-    </template>
-
-    <script src="./script.js"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Habit Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#070b2a;--panel:#0f1546;--line:#252d7a;--text:#e8ecff;--mute:#8e98d8;--p:#b388ff;--b:#33b5ff;--c:#14e0d0;--box:#161e63;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 70% -10%,#1a2380 0,transparent 60%),var(--bg);color:var(--text);font-family:Sora,system-ui,sans-serif;padding:16px}
+.wrap{max-width:1100px;margin:auto}
+.xp{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);margin-bottom:14px}
+.bar{flex:1;height:8px;border-radius:9px;background:var(--box);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c),var(--b));transition:width .4s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card small{color:var(--mute);font-size:12px}
+.card b{display:block;font-size:30px;margin-top:4px}
+.head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px;flex-wrap:wrap;gap:8px}
+h1{font-size:20px;margin:0}
+button{font:inherit;color:var(--text);cursor:pointer}
+.nav button,.add button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px}
+.nav span{margin:0 10px;font-weight:600}
+button:focus-visible,input:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.scroll{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px}
+table{border-collapse:separate;border-spacing:4px 6px;min-width:max-content}
+th{font-weight:600;font-size:11px;color:var(--mute)}
+th.w{border-radius:8px;padding:5px;color:#0a0f3a;font-size:12px}
+.w0{background:var(--p)}.w1{background:var(--b)}.w2{background:var(--c)}.w3{background:#ffd166}.w4{background:#ff8fab}
+td.n{padding-right:12px;white-space:nowrap;font-size:14px;min-width:150px}
+td.n button{background:none;border:0;color:var(--mute);margin-left:6px;font-size:12px;opacity:.5}
+.cb{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--line);background:transparent;display:block;padding:0;transition:.15s}
+.cb.on{background:var(--col);border-color:var(--col);box-shadow:0 0 10px var(--col);}
+.cb.on::after{content:"✓";color:#0a0f3a;font-size:14px;font-weight:700}
+.cb.fut{opacity:.35}
+.cb.today{border-color:var(--c)}
+.sc{height:14px;border-radius:4px;background:var(--c)}
+.chart{margin-top:14px;padding:12px 16px}
+.add{display:flex;gap:8px;margin-top:14px}
+input{flex:1;background:var(--box);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="xp"><span id="lvl"></span><div class="bar"><i id="xpb"></i></div><span id="xpt"></span></div>
+  <div class="stats">
+    <div class="card"><small>Completed</small><b id="s1"></b></div>
+    <div class="card"><small>Perfect days this month</small><b id="s2"></b></div>
+    <div class="card"><small>Best run (days in a row)</small><b id="s3"></b></div>
+  </div>
+  <div class="head"><h1>Habits</h1><div class="nav"><button id="prev" aria-label="Previous month">‹</button><span id="mon"></span><button id="next" aria-label="Next month">›</button></div></div>
+  <div class="scroll"><table id="grid"></table></div>
+  <div class="card chart"><small>Daily progress</small><svg id="chart" viewBox="0 0 600 100" width="100%" height="110" preserveAspectRatio="none"></svg></div>
+  <form class="add" onsubmit="return false"><input id="new" placeholder="Add a habit, e.g. Read 10 pages" maxlength="40"><button id="addb">Add habit</button></form>
+</div>
+<script>
+var KEY="habit-tracker-v1",COLS=["#b388ff","#33b5ff","#14e0d0","#ffd166","#ff8fab"];
+var DEF=["Wake up at 06:00","Meditation","Gym","Cold shower","Deep work","Read 10 pages","No sugar","Sleep before 23:00"];
+var S=load();var view=new Date();view.setDate(1);
+function load(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}
+  return{habits:DEF.map(function(n,i){return{id:i+1,name:n}}),done:{},next:9}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function pad(n){return n<10?"0"+n:""+n}
+function key(y,m,d,id){return y+"-"+pad(m+1)+"-"+pad(d)+":"+id}
+function render(){
+  var y=view.getFullYear(),m=view.getMonth(),dim=new Date(y,m+1,0).getDate();
+  var now=new Date(),isCur=now.getFullYear()==y&&now.getMonth()==m;
+  var past=y<now.getFullYear()||(y==now.getFullYear()&&m<now.getMonth());
+  var upto=isCur?now.getDate():(past?dim:0);
+  document.getElementById("mon").textContent=view.toLocaleString("en",{month:"long",year:"numeric"});
+  var H=S.habits,wd="SMTWTFS",wk=Math.ceil(dim/7),h="<tr><th></th>";
+  for(var w=0;w<wk;w++){var c=Math.min(7,dim-w*7);h+='<th class="w w'+(w%5)+'" colspan="'+c+'">Week '+(w+1)+'</th>'}
+  h+="</tr><tr><th></th>";
+  for(var d=1;d<=dim;d++)h+="<th>"+wd[new Date(y,m,d).getDay()]+"<br>"+d+"</th>";
+  h+="</tr>";
+  H.forEach(function(hb,i){
+    h+='<tr><td class="n">'+esc(hb.name)+'<button data-del="'+hb.id+'" aria-label="Delete habit">✕</button></td>';
+    for(var d=1;d<=dim;d++){var on=S.done[key(y,m,d,hb.id)],f=d>upto&&!(isCur&&d==now.getDate());
+      h+='<td><button class="cb'+(on?" on":"")+(isCur&&d==now.getDate()?" today":"")+(d>upto?" fut":"")+'" style="--col:'+COLS[(Math.floor((d-1)/7))%5]+'" data-d="'+d+'" data-h="'+hb.id+'" aria-label="'+esc(hb.name)+' day '+d+'"></button></td>'}
+    h+="</tr>"});
+  var pc=[],perfect=0,run=0,best=0,tot=0;
+  for(var d=1;d<=dim;d++){var n=0;H.forEach(function(hb){if(S.done[key(y,m,d,hb.id)])n++});
+    tot+=n;var p=H.length?n/H.length:0;pc.push(p);
+    if(d<=upto||n){ if(H.length&&n==H.length){perfect++;run++;best=Math.max(best,run)}else run=0 }}
+  h+='<tr><td class="n" style="color:var(--mute);font-size:12px">Daily score</td>';
+  pc.forEach(function(p){h+='<td><div class="sc" style="opacity:'+(0.12+p*0.88)+'"></div></td>'});
+  h+="</tr>";
+  document.getElementById("grid").innerHTML=h;
+  var denom=H.length*Math.max(upto,1),done=0;
+  for(var d=1;d<=upto;d++)H.forEach(function(hb){if(S.done[key(y,m,d,hb.id)])done++});
+  document.getElementById("s1").textContent=Math.round(done/denom*100)+"%";
+  document.getElementById("s2").textContent=perfect;
+  document.getElementById("s3").textContent=best;
+  var xp=Object.keys(S.done).filter(function(k){return S.done[k]}).length*10;
+  document.getElementById("lvl").textContent="Level "+(Math.floor(xp/500)+1)+" · "+xp+" XP";
+  document.getElementById("xpb").style.width=(xp%500)/5+"%";
+  document.getElementById("xpt").textContent=(500-xp%500)+" XP to next level";
+  var pts=pc.map(function(p,i){return(i/(dim-1)*600).toFixed(1)+","+(95-p*88).toFixed(1)}).join(" ");
+  document.getElementById("chart").innerHTML='<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14e0d0" stop-opacity=".5"/><stop offset="1" stop-color="#14e0d0" stop-opacity="0"/></linearGradient></defs><polygon points="0,100 '+pts+' 600,100" fill="url(#g)"/><polyline points="'+pts+'" fill="none" stroke="#14e0d0" stroke-width="2" vector-effect="non-scaling-stroke"/>';
+}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+document.getElementById("grid").addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  if(t.dataset.del){if(confirm("Delete this habit?")){S.habits=S.habits.filter(function(x){return x.id!=t.dataset.del});save();render()}return}
+  var k=key(view.getFullYear(),view.getMonth(),+t.dataset.d,t.dataset.h);
+  if(S.done[k])delete S.done[k];else S.done[k]=1;save();render()});
+document.getElementById("prev").onclick=function(){view.setMonth(view.getMonth()-1);render()};
+document.getElementById("next").onclick=function(){view.setMonth(view.getMonth()+1);render()};
+function add(){var i=document.getElementById("new"),v=i.value.trim();if(!v)return;
+  S.habits.push({id:S.next++,name:v});i.value="";save();render()}
+document.getElementById("addb").onclick=add;
+document.getElementById("new").addEventListener("keydown",function(e){if(e.key=="Enter")add()});
+render();
+</script>
+</body>
 </html>
