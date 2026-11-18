@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#171c2f">
+    <title>Daily Habit Tracker</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1>My habits</h1>
+        </div>
+        <button class="icon-button" id="clearAllButton" type="button" title="Reset all habits" aria-label="Reset all habits">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14M10 10v6M14 10v6"/></svg>
+        </button>
+      </header>
+
+      <section class="summary" aria-label="Daily summary">
+        <div class="progress-ring" id="progressRing">
+          <div class="progress-copy">
+            <strong id="progressPercent">0%</strong>
+            <span>complete</span>
+          </div>
+        </div>
+        <div class="summary-copy">
+          <p>Today's progress</p>
+          <strong><span id="completedCount">0</span> of <span id="totalCount">0</span> habits</strong>
+        </div>
+      </section>
+
+      <section class="habits" aria-labelledby="habitsHeading">
+        <div class="section-heading">
+          <h2 id="habitsHeading">Today</h2>
+          <button class="text-button" id="showAddButton" type="button">+ Add habit</button>
+        </div>
+
+        <form class="add-form" id="addForm" hidden>
+          <input id="habitInput" name="habit" type="text" maxlength="60" placeholder="New habit name" aria-label="New habit name" required>
+          <button type="submit">Add</button>
+        </form>
+
+        <div class="habit-list" id="habitList"></div>
+      </section>
+    </main>
+
+    <template id="habitTemplate">
+      <article class="habit-item">
+        <button class="habit-check" type="button" aria-label="Mark habit complete">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 3 3 7-7"/></svg>
+        </button>
+        <div class="habit-details">
+          <h3></h3>
+          <p></p>
+        </div>
+        <button class="delete-button" type="button" title="Delete habit" aria-label="Delete habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></svg>
+        </button>
+      </article>
+    </template>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
